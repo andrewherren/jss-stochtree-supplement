@@ -1,5 +1,7 @@
 # Other files
 *.zip
+*.csv
+*.rda
 
 ####### Python gitignore
 

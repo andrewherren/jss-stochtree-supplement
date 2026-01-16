@@ -28,3 +28,23 @@ docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/motorcycle-ba
 docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/rdd-bart.R
 docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/simulated-bcf.R
 ```
+
+### Replicating Python Output
+
+First, build the python docker image via
+
+```bash
+docker build -t stochtree-python -f Dockerfile-Python . 
+```
+
+and then run the replication scripts via
+
+```bash
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/acic-bcf.py
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/custom-interface-bart-linreg.py
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/custom-interface-bart-robust.py
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/friedman-bart.py
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/motorcycle-bart.py
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/rdd-bart.py
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/simulated-bcf.py
+```
