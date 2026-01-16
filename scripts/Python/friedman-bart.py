@@ -34,8 +34,8 @@ def gaussian_error(
 
 
 # Helper functions for test / train split
-def compute_test_train_indices(n: int, test_set_pct: float) -> tuple:
-    train_inds, test_inds = train_test_split(np.arange(n), test_size=test_set_pct)
+def compute_test_train_indices(n: int, test_set_pct: float, random_seed: int = None) -> tuple:
+    train_inds, test_inds = train_test_split(np.arange(n), test_size=test_set_pct, random_state=random_seed)
     return (test_inds, train_inds)
 
 
@@ -64,7 +64,7 @@ sigma2_true = np.var(eps)
 
 # Split data into test and train sets
 test_set_pct = 0.2
-subset_inds_list = compute_test_train_indices(n, test_set_pct)
+subset_inds_list = compute_test_train_indices(n, test_set_pct, random_seed)
 test_inds = subset_inds_list[0]
 train_inds = subset_inds_list[1]
 n_test = len(test_inds)
