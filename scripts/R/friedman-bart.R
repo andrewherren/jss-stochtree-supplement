@@ -71,7 +71,7 @@ m_x_test <- subset_data(m_x, test_inds)
 m_x_train <- subset_data(m_x, train_inds)
 
 # Fit a BART model from XBART initialization with different parameters for the GFR and MCMC algorithms
-xbart_model <- bart(
+xbart_model <- stochtree::bart(
     X_train = X_train,
     y_train = y_train,
     X_test = X_test,
@@ -86,7 +86,7 @@ mean_forest_params = list(
     min_samples_leaf = 10,
     max_depth = 8
 )
-bart_model <- bart(
+bart_model <- stochtree::bart(
     X_train = X_train,
     y_train = y_train,
     X_test = X_test,
