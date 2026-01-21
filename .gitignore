@@ -2,6 +2,7 @@
 *.zip
 *.csv
 *.rda
+*.vscode/
 
 ####### Python gitignore
 
