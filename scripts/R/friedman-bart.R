@@ -109,8 +109,9 @@ pdf(
     height = 3,
     pointsize = 10
 )
+sigma2_global_samples <- extract_parameter(bart_model, "sigma2_global")
 plot(
-    bart_model$sigma2_global_samples,
+    sigma2_global_samples,
     type = "l",
     xlab = "Iteration",
     ylab = "Error Variance Value"

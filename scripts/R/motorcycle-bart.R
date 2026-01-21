@@ -24,7 +24,7 @@ bart_model <- stochtree::bart(
     num_mcmc = num_mcmc,
     general_params = general_params
 )
-sigma_samples <- sqrt(bart_model$sigma2_global_samples)
+sigma_samples <- sqrt(extract_parameter(bart_model, "sigma2_global"))
 
 # Sample from the posterior predictive distribution of the homoskedastic model
 y_posterior_predictive <- sample_bart_posterior_predictive(
