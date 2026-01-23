@@ -17,7 +17,13 @@ First, build the R docker image via
 docker build -t stochtree-r -f Dockerfile-R . 
 ```
 
-and then run the replication scripts via
+and then run the replication script via
+
+```bash
+docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/replication_script.R
+```
+
+For debugging purposes, you can run any of the analyses as a standalone script via
 
 ```bash
 docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/acic-bcf.R
@@ -37,7 +43,13 @@ First, build the python docker image via
 docker build -t stochtree-python -f Dockerfile-Python . 
 ```
 
-and then run the replication scripts via
+and then run the replication script via
+
+```bash
+docker run --rm -v $(pwd):/workspace stochtree-python python scripts/replication_script.py
+```
+
+For debugging purposes, you can run any of the analyses as a standalone script via
 
 ```bash
 docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/acic-bcf.py

@@ -43,7 +43,6 @@ sample_tau2 <- function(phi_i, nu) {
     return(1 / rgamma(1, posterior_shape, rate = posterior_scale))
 }
 
-# Updated example with robust errors
 # Simulate data
 n <- 1000
 p <- 20
