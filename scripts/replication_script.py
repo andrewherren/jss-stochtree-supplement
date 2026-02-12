@@ -9,11 +9,15 @@ import pandas as pd
 import pyreadr
 from typing import Union
 from scipy.stats import norm
-from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_wine, load_breast_cancer
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import DecisionTreeRegressor, plot_tree
 from stochtree import (
     BARTModel, 
     BCFModel,
+    StochTreeBARTRegressor, 
+    StochTreeBARTBinaryClassifier, 
     RNG,
     Dataset,
     Forest,
@@ -1215,4 +1219,3 @@ axes[1].axline((np.mean(ate_posterior_rfx_school_j), np.mean(ate_posterior_rfx_s
 axes[1].set_xlabel(f"School {i + 1} ATE (with RFX)")
 axes[1].set_ylabel(f"School {j + 1} ATE (with RFX)")
 plt.savefig("figures/Python/acic-bcf-rfx-comparison.pdf")
-

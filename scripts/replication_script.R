@@ -152,7 +152,7 @@ m_x_test <- subset_data(m_x, test_inds)
 m_x_train <- subset_data(m_x, train_inds)
 
 # Fit a BART model from XBART initialization with different parameters for the GFR and MCMC algorithms
-xbart_model <- stochtree::bart(
+xbart_model <- bart(
     X_train = X_train,
     y_train = y_train,
     X_test = X_test,
@@ -168,7 +168,7 @@ mean_forest_params = list(
     min_samples_leaf = 10,
     max_depth = 8
 )
-bart_model <- stochtree::bart(
+bart_model <- bart(
     X_train = X_train,
     y_train = y_train,
     X_test = X_test,
@@ -242,7 +242,7 @@ general_params <- list(sample_sigma2_global = T,
                        random_seed = random_seed,
                        num_threads = 1
 )
-bart_model <- stochtree::bart(
+bart_model <- bart(
     X_train = as.matrix(mcycle$times),
     y_train = mcycle$accel,
     num_gfr = num_gfr,
@@ -289,7 +289,7 @@ variance_forest_params <- list(
     beta = 3.0,
     min_samples_leaf = 20
 )
-bart_model_het <- stochtree::bart(
+bart_model_het <- bart(
     X_train = as.matrix(mcycle$times),
     y_train = mcycle$accel,
     num_gfr = num_gfr,
@@ -437,7 +437,7 @@ forest_params <- list(
 )
 
 # Fit the BART model
-bart_model <- stochtree::bart(
+bart_model <- bart(
   X_train = cbind(x, w),
   leaf_basis_train = Psi,
   y_train = y,
@@ -989,7 +989,7 @@ general_params_propensity = list(
   random_seed = random_seed, 
   num_threads = 1
 )
-propensity_model <- stochtree::bart(
+propensity_model <- bart(
   X_train = X,
   y_train = Z,
   general_params = general_params_propensity
@@ -1002,7 +1002,7 @@ propensity <- predict(
 )
 
 # Fit a causal model
-bcf_model <- stochtree::bcf(
+bcf_model <- bcf(
   X_train = X,
   Z_train = Z,
   y_train = y,
@@ -1129,7 +1129,7 @@ general_params_propensity = list(
     random_seed = random_seed, 
     num_threads = 1
 )
-propensity_model <- stochtree::bart(
+propensity_model <- bart(
     X_train = covariate_df,
     y_train = Z,
     general_params = general_params_propensity
@@ -1145,7 +1145,7 @@ propensity <- predict(
 treatment_forest_params <- list(
     keep_vars = c("X1", "X2")
 )
-bcf_model <- stochtree::bcf(
+bcf_model <- bcf(
     X_train = covariate_df,
     Z_train = Z,
     y_train = y,
@@ -1195,7 +1195,7 @@ rfx_basis <- cbind(1, Z)
 
 # Fit causal model with random effects
 rfx_params <- list(model_spec = "intercept_plus_treatment")
-bcf_model_rfx <- stochtree::bcf(
+bcf_model_rfx <- bcf(
     X_train = covariate_df,
     Z_train = Z,
     y_train = y,
