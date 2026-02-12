@@ -9,7 +9,7 @@ library(rpart)
 library(rpart.plot)
 
 # Seed for reproducibility
-random_seed <- 12345
+random_seed <- 4321
 set.seed(random_seed)
 
 ##################################################################
@@ -158,7 +158,8 @@ xbart_model <- stochtree::bart(
     X_test = X_test,
     num_gfr = 20,
     num_mcmc = 0,
-    general_params = list(random_seed = random_seed)
+    general_params = list(random_seed = random_seed, 
+                          num_threads = 1)
 )
 xbart_json <- saveBARTModelToJsonString(xbart_model)
 mean_forest_params = list(
@@ -177,7 +178,8 @@ bart_model <- stochtree::bart(
     mean_forest_params = mean_forest_params,
     previous_model_json = xbart_json,
     previous_model_warmstart_sample_num = 20,
-    general_params = list(random_seed = random_seed)
+    general_params = list(random_seed = random_seed, 
+                          num_threads = 1)
 )
 
 # Now inspect the resulting model
@@ -236,7 +238,10 @@ num_gfr <- 10
 num_burnin <- 0
 num_mcmc <- 100
 num_samples <- num_gfr + num_burnin + num_mcmc
-general_params <- list(sample_sigma2_global = T, random_seed = random_seed)
+general_params <- list(sample_sigma2_global = T, 
+                       random_seed = random_seed,
+                       num_threads = 1
+)
 bart_model <- stochtree::bart(
     X_train = as.matrix(mcycle$times),
     y_train = mcycle$accel,
@@ -277,7 +282,7 @@ pred_interval_ub_hom <- apply(
 )
 
 # Add a variance forest and re-run stochtree
-general_params <- list(sample_sigma2_global = F, random_seed = random_seed)
+general_params <- list(sample_sigma2_global = F, random_seed = random_seed, num_threads = 1)
 variance_forest_params <- list(
     num_trees = 20,
     alpha = 0.5,
@@ -418,7 +423,8 @@ global_params <- list(
   standardize = T,
   sample_sigma_global = TRUE,
   sigma2_global_init = 0.1, 
-  random_seed = random_seed
+  random_seed = random_seed, 
+  num_threads = 1
 )
 forest_params <- list(
   num_trees = 50,
@@ -608,7 +614,8 @@ for (i in 1:(num_burnin + num_mcmc)) {
         forest_model_config,
         global_model_config,
         keep_forest = keep_sample,
-        gfr = F
+        gfr = F, 
+        num_threads = 1
     )
 
     # Sample global variance parameter
@@ -751,7 +758,8 @@ for (i in 1:(num_burnin + num_mcmc)) {
         forest_model_config,
         global_model_config,
         keep_forest = keep_sample,
-        gfr = F
+        gfr = F, 
+        num_threads = 1
     )
 
     # Sample local variance parameters
@@ -868,7 +876,8 @@ for (i in 1:(num_burnin + num_mcmc)) {
         forest_model_config,
         global_model_config,
         keep_forest = keep_sample,
-        gfr = F
+        gfr = F, 
+        num_threads = 1
     )
 
     # Sample global error variance parameter
@@ -977,7 +986,8 @@ y <- E_Y_ZX + rnorm(n, 0, 1)
 general_params_propensity = list(
   probit_outcome_model = T,
   sample_sigma2_global = F,
-  random_seed = random_seed
+  random_seed = random_seed, 
+  num_threads = 1
 )
 propensity_model <- stochtree::bart(
   X_train = X,
@@ -1000,7 +1010,8 @@ bcf_model <- stochtree::bcf(
   num_gfr = 10,
   num_burnin = 2000,
   num_mcmc = 1000,
-  general_params = list(random_seed = random_seed)
+  general_params = list(random_seed = random_seed, 
+                        num_threads = 1)
 )
 
 # Compute the posterior of the treatment effect function
@@ -1115,7 +1126,8 @@ p <- ncol(df)
 general_params_propensity = list(
     probit_outcome_model = T,
     sample_sigma2_global = F,
-    random_seed = random_seed
+    random_seed = random_seed, 
+    num_threads = 1
 )
 propensity_model <- stochtree::bart(
     X_train = covariate_df,
@@ -1141,7 +1153,7 @@ bcf_model <- stochtree::bcf(
     num_gfr = 10,
     num_burnin = 2000,
     num_mcmc = 1000,
-    general_params = list(random_seed = random_seed),
+    general_params = list(random_seed = random_seed, num_threads = 1),
     treatment_effect_forest_params = treatment_forest_params
 )
 
@@ -1192,7 +1204,7 @@ bcf_model_rfx <- stochtree::bcf(
     num_gfr = 10,
     num_burnin = 2000,
     num_mcmc = 1000,
-    general_params = list(random_seed = random_seed),
+    general_params = list(random_seed = random_seed, num_threads = 1),
     treatment_effect_forest_params = treatment_forest_params,
     random_effects_params = rfx_params
 )

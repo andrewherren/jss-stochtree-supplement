@@ -26,7 +26,7 @@ from stochtree import (
 )
 
 # Set seed for reproducibility
-random_seed = 12345
+random_seed = 4321
 rng = np.random.default_rng(random_seed)
 
 ##################################################################
@@ -224,7 +224,7 @@ xbart_model.sample(
     X_test=X_test,
     num_gfr=20,
     num_mcmc=0,
-    general_params={"random_seed": random_seed},
+    general_params={"random_seed": random_seed, "num_threads": 1},
 )
 xbart_json = xbart_model.to_json()
 mean_forest_params = {"alpha": 0.25, "beta": 2, "min_samples_leaf": 10, "max_depth": 8}
@@ -239,7 +239,7 @@ bart_model.sample(
     mean_forest_params=mean_forest_params,
     previous_model_json=xbart_json,
     previous_model_warmstart_sample_num=19,
-    general_params={"random_seed": random_seed},
+    general_params={"random_seed": random_seed, "num_threads": 1},
 )
 
 # Now inspect the resulting model
@@ -285,7 +285,9 @@ n = mcycle.shape[0]
 num_gfr = 10
 num_burnin = 0
 num_mcmc = 100
-general_params = {"sample_sigma2_global": True, "random_seed": random_seed}
+general_params = {"sample_sigma2_global": True, 
+                  "random_seed": random_seed, 
+                  "num_threads": 1}
 bart_model = BARTModel()
 bart_model.sample(
     X_train=mcycle[:, 0],
@@ -313,6 +315,7 @@ pred_interval_ub_hom = np.quantile(y_posterior_predictive, axis=(0, 2), q=0.975)
 general_params = {
     "sample_sigma2_global": False,
     "random_seed": random_seed,
+    "num_threads": 1
 }
 variance_forest_params = {
     "num_trees": 20,
@@ -451,6 +454,7 @@ global_params = {
     "sample_sigma_global": True,
     "sigma2_global_init": 0.1,
     "random_seed": random_seed,
+    "num_threads": 1
 }
 forest_params = {
     "num_trees": 50,
@@ -629,15 +633,16 @@ for i in range(num_burnin + num_mcmc):
 
     # Sample from the forest
     forest_sampler.sample_one_iteration(
-        forest_container,
-        active_forest,
-        forest_dataset,
-        residual,
-        cpp_rng,
-        global_model_config,
-        forest_model_config,
-        keep_sample,
-        False,
+        forest_container=forest_container,
+        forest=active_forest,
+        dataset=forest_dataset,
+        residual=residual,
+        rng=cpp_rng,
+        global_config=global_model_config,
+        forest_config=forest_model_config,
+        keep_forest=keep_sample,
+        gfr=False,
+        num_threads=1
     )
 
     # Sample global variance parameter
@@ -760,15 +765,16 @@ for i in range(num_burnin + num_mcmc):
 
     # Sample from the forest
     forest_sampler.sample_one_iteration(
-        forest_container,
-        active_forest,
-        forest_dataset,
-        residual,
-        cpp_rng,
-        global_model_config,
-        forest_model_config,
-        keep_sample,
-        False,
+        forest_container=forest_container,
+        forest=active_forest,
+        dataset=forest_dataset,
+        residual=residual,
+        rng=cpp_rng,
+        global_config=global_model_config,
+        forest_config=forest_model_config,
+        keep_forest=keep_sample,
+        gfr=False,
+        num_threads=1
     )
 
     # Sample local variance parameters
@@ -878,15 +884,16 @@ for i in range(num_burnin + num_mcmc):
 
     # Sample from the forest
     forest_sampler.sample_one_iteration(
-        forest_container,
-        active_forest,
-        forest_dataset,
-        residual,
-        cpp_rng,
-        global_model_config,
-        forest_model_config,
-        keep_sample,
-        False,
+        forest_container=forest_container,
+        forest=active_forest,
+        dataset=forest_dataset,
+        residual=residual,
+        rng=cpp_rng,
+        global_config=global_model_config,
+        forest_config=forest_model_config,
+        keep_forest=keep_sample,
+        gfr=False,
+        num_threads=1
     )
 
     # Sample global variance parameter
@@ -963,6 +970,7 @@ general_params_propensity = {
   "probit_outcome_model": True,
   "sample_sigma2_global": False,
   "random_seed": random_seed,
+  "num_threads": 1
 }
 propensity_model = BARTModel()
 propensity_model.sample(
@@ -988,7 +996,8 @@ bcf_model.sample(
   num_gfr = 10,
   num_burnin = 2000,
   num_mcmc = 1000,
-  general_params = {'random_seed' : random_seed}
+  general_params = {'random_seed' : random_seed, 
+                    'num_threads': 1}
 )
 
 # Compute outcome predictions
@@ -1073,6 +1082,7 @@ general_params_propensity = {
     "probit_outcome_model": True,
     "sample_sigma2_global": False,
     "random_seed": random_seed,
+    "num_threads": 1
 }
 propensity_model = BARTModel()
 propensity_model.sample(
@@ -1094,7 +1104,7 @@ bcf_model.sample(
     num_burnin=2000,
     num_mcmc=1000,
     treatment_effect_forest_params=treatment_forest_params,
-    general_params={"random_seed": random_seed},
+    general_params={"random_seed": random_seed, "num_threads": 1},
 )
 
 # Inspect the outcome predictions
@@ -1129,7 +1139,7 @@ bcf_model_rfx.sample(
     num_burnin=2000,
     num_mcmc=1000,
     treatment_effect_forest_params=treatment_forest_params,
-    general_params={"random_seed": random_seed},
+    general_params={"random_seed": random_seed, "num_threads": 1},
     random_effects_params={"model_spec": "intercept_plus_treatment"},
 )
 

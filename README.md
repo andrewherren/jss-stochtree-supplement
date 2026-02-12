@@ -17,6 +17,12 @@ First, build the R docker image via
 docker build -t stochtree-r -f Dockerfile-R . 
 ```
 
+To force a rebuild of the image, use the `--no-cache` option:
+
+```bash
+docker build --no-cache -t stochtree-r -f Dockerfile-R . 
+```
+
 and then run the replication script via
 
 ```bash
