@@ -1219,3 +1219,62 @@ axes[1].axline((np.mean(ate_posterior_rfx_school_j), np.mean(ate_posterior_rfx_s
 axes[1].set_xlabel(f"School {i + 1} ATE (with RFX)")
 axes[1].set_ylabel(f"School {j + 1} ATE (with RFX)")
 plt.savefig("figures/Python/acic-bcf-rfx-comparison.pdf")
+
+##################################################################
+### Section 8: Sklearn API Demo
+##################################################################
+
+# Simulate simple regression data
+n = 100
+p = 10
+X = rng.normal(size=(n, p))
+y = X[:, 0] * 3 + rng.normal(size=n)
+
+# Fit a StochTreeBARTRegressor
+reg = StochTreeBARTRegressor(general_params={"random_seed": random_seed})
+reg.fit(X, y)
+
+# Predict from the model and compare its (posterior mean) predictions to the true outcome
+pred = reg.predict(X)
+
+# Hyperparameter tuning
+param_grid = {
+    "num_gfr": [10, 40],
+    "num_mcmc": [0, 1000],
+    "mean_forest_params": [
+        {"num_trees": 50, "alpha": 0.95, "beta": 2.0},
+        {"num_trees": 100, "alpha": 0.90, "beta": 1.5},
+        {"num_trees": 200, "alpha": 0.85, "beta": 1.0},
+    ],
+}
+grid_search = GridSearchCV(
+    estimator=StochTreeBARTRegressor(),
+    param_grid=param_grid,
+    cv=5,
+    scoring="r2",
+    n_jobs=-1,
+)
+grid_search.fit(X, y)
+
+# Load binary classification dataset
+dataset = load_breast_cancer()
+X = dataset.data
+y = dataset.target
+
+# Fit a StochTreeBARTClassifier
+clf = StochTreeBARTBinaryClassifier(general_params={"random_seed": random_seed})
+clf.fit(X=X, y=y)
+
+# Predict from the model and visualize predicted probabilities
+probs = clf.predict_proba(X)
+
+# Load a multi-class dataset
+dataset = load_wine()
+X = dataset.data
+y = dataset.target
+
+# Fit a multi-class classification model by wrapping a OneVsRestClassifier around StochTreeBARTBinaryClassifier
+clf = OneVsRestClassifier(
+    StochTreeBARTBinaryClassifier(general_params={"random_seed": random_seed})
+)
+clf.fit(X=X, y=y)
