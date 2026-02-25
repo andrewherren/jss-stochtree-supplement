@@ -2,7 +2,7 @@
 ### Setup
 ##################################################################
 
-# Load libraries
+# Load packages
 library(stochtree)
 library(MASS)
 library(rpart)
