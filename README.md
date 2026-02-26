@@ -9,6 +9,14 @@ Supplementary replication materials for the stochtree JSS paper
 The figures produced in the paper can be matched exactly using docker. 
 To begin, first install [docker](https://docs.docker.com/desktop/).
 
+Several of the demo datasets must be downloaded locally to the `data/` directory.
+This can be done by running the python `scripts/data_download.py` script from the terminal. 
+If you need to install python, there are many high-quality python distributions for different systems. For one example that works well on all platforms, we recommend [Anaconda](https://www.anaconda.com/download). Once a python environment is set up, download the data by running
+
+```bash
+python scripts/data_download.py
+```
+
 ### Replicating R Output
 
 First, build the R docker image via
@@ -29,18 +37,6 @@ and then run the replication script via
 docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/replication_script.R
 ```
 
-For debugging purposes, you can run any of the analyses as a standalone script via
-
-```bash
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/acic-bcf.R
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/custom-interface-bart-linreg.R
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/custom-interface-bart-robust.R
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/friedman-bart.R
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/motorcycle-bart.R
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/rdd-bart.R
-docker run --rm -v $(pwd):/workspace stochtree-r Rscript scripts/R/simulated-bcf.R
-```
-
 ### Replicating Python Output
 
 First, build the python docker image via
@@ -53,16 +49,4 @@ and then run the replication script via
 
 ```bash
 docker run --rm -v $(pwd):/workspace stochtree-python python scripts/replication_script.py
-```
-
-For debugging purposes, you can run any of the analyses as a standalone script via
-
-```bash
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/acic-bcf.py
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/custom-interface-bart-linreg.py
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/custom-interface-bart-robust.py
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/friedman-bart.py
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/motorcycle-bart.py
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/rdd-bart.py
-docker run --rm -v $(pwd):/workspace stochtree-python python scripts/Python/simulated-bcf.py
 ```
