@@ -18,8 +18,9 @@ WORKDIR /workspace
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install latest stochtree from github
-RUN pip install --no-cache-dir stochtree==0.3.1
+# Install latest stochtree from PyPI
+# RUN pip install --no-cache-dir stochtree==0.3.1
+RUN pip install --no-cache-dir git+https://github.com/StochasticTree/stochtree.git
 
 # Launch Python process
 CMD ["python"]

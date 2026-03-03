@@ -11,8 +11,9 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/*
 
 # R package dependencies
+# RUN R -e "install.packages(c('remotes', 'rpart', 'rpart.plot', 'MASS', 'stochtree'))"
 RUN R -e "install.packages(c('remotes', 'rpart', 'rpart.plot', 'MASS'))"
-RUN R -e "remotes::install_github('StochasticTree/stochtree', ref='r-0.3.1')"
+RUN R -e "remotes::install_github('StochasticTree/stochtree', ref='r-dev')"
 
 # Set working directory
 WORKDIR /workspace
