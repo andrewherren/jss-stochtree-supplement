@@ -30,6 +30,16 @@ jobs:
         run: |
           docker build -t stochtree-python -f Dockerfile-Python . 
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download datasets
+        run: |
+          pip install pandas pyreadr
+          python scripts/data_download.py
+
       - name: Clear plots from the figures/ directory
         run: |
           rm ${{ github.workspace }}/figures/Python/*.pdf
