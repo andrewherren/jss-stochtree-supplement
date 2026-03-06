@@ -15,6 +15,7 @@ from sklearn.tree import DecisionTreeRegressor, plot_tree
 from stochtree import (
     BARTModel, 
     BCFModel,
+    OutcomeModel,
     StochTreeBARTRegressor, 
     StochTreeBARTBinaryClassifier, 
     RNG,
@@ -967,7 +968,7 @@ y = E_Y_ZX + rng.normal(0, 1, size=n)
 
 # Fit a propensity model
 general_params_propensity = {
-  "probit_outcome_model": True,
+  "outcome_model": OutcomeModel(outcome="binary", link="probit"),
   "sample_sigma2_global": False,
   "random_seed": random_seed,
   "num_threads": 1
@@ -1080,7 +1081,7 @@ n, p = df.shape
 
 # Fit a propensity model
 general_params_propensity = {
-    "probit_outcome_model": True,
+    "outcome_model": OutcomeModel(outcome="binary", link="probit"),
     "sample_sigma2_global": False,
     "random_seed": random_seed,
     "num_threads": 1
