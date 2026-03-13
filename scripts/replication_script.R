@@ -191,8 +191,8 @@ y_hat_test <- predict(bart_model, X = X_test, terms = "y_hat", type = "mean")
 # Chart for paper
 pdf(
     "figures/R/friedman-bart-traceplot-warm-start.pdf",
-    width = 6,
-    height = 4,
+    width = 4,
+    height = 3,
     pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))
@@ -642,8 +642,8 @@ for (i in 1:(num_burnin + num_mcmc)) {
 # Look at traceplot of regression parameter samples
 pdf(
     "figures/R/custom-interface-bart-reg-gamma-histogram.pdf",
-    width = 5,
-    height = 3.5,
+    width = 4,
+    height = 3,
     pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))
@@ -906,8 +906,8 @@ for (i in 1:(num_burnin + num_mcmc)) {
 # Plot RMSE samples side-by-side
 pdf(
     "figures/R/custom-interface-bart-robust-rmse-comparison.pdf",
-    width = 6,
-    height = 4,
+    width = 4,
+    height = 3,
     pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))
@@ -936,8 +936,8 @@ m_x_hat_posterior_mean_non_robust <- rowMeans(fhat_samples_non_robust)
 # Plot predicted versus actual for both functions
 pdf(
     "figures/R/custom-interface-bart-robust-pred-actual-comparison.pdf",
-    width = 6,
-    height = 4,
+    width = 4,
+    height = 3,
     pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))
@@ -1034,8 +1034,8 @@ ate_posterior <- colMeans(tau_hat_posterior)
 # Plot the true CATE against the CATE posterior mean
 pdf(
   "figures/R/simulated-cate-true-fitted.pdf",
-  width = 6,
-  height = 4,
+  width = 4,
+  height = 3,
   pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))
@@ -1051,8 +1051,8 @@ dev.off()
 # ATE histogram
 pdf(
   "figures/R/simulated-ate-posterior.pdf",
-  width = 5,
-  height = 3.5,
+  width = 4,
+  height = 3,
   pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))
@@ -1268,7 +1268,7 @@ random_intercepts_long <- reshape(
     v.names = "V",
     direction = "long"
 )
-pdf("figures/R/acic-random-intercept-boxplot.pdf", width = 6, height = 4, pointsize = 10)
+pdf("figures/R/acic-random-intercept-boxplot.pdf", width = 4, height = 3, pointsize = 10)
 par(mar = c(4, 4, 0.5, 0.5))
 box_out <- boxplot(
     V ~ schoolid,
@@ -1284,8 +1284,8 @@ dev.off()
 ate_posterior_rfx <- colMeans(cate_posterior_rfx)
 pdf(
     "figures/R/acic-ate-posterior-rfx.pdf",
-    width = 5,
-    height = 3.5,
+    width = 4,
+    height = 3,
     pointsize = 10
 )
 par(mar = c(4, 4, 0.5, 0.5))

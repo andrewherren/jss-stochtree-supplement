@@ -28,6 +28,7 @@ from stochtree import (
     Residual,
     ForestModelConfig,
     GlobalModelConfig,
+    plot_parameter_trace
 )
 
 # Consistent font size across all figures
@@ -276,9 +277,8 @@ plt.tight_layout()
 plt.savefig("figures/Python/friedman-bart-pred-actual-warm-start.pdf", bbox_inches='tight')
 
 # Inspect the traceplot of sigma^2
-plt.figure(figsize=(6, 4))
-sigma2_global_samples = bart_model.extract_parameter("sigma2_global")
-plt.plot(sigma2_global_samples, linestyle="-")
+fig, ax = plt.subplots(figsize=(4, 3))
+plot_parameter_trace(bart_model, term="sigma2_global", ax=ax)
 plt.tight_layout()
 plt.savefig("figures/Python/friedman-bart-traceplot-warm-start.pdf", bbox_inches='tight')
 
@@ -670,7 +670,7 @@ for i in range(num_burnin + num_mcmc):
 
 
 # Inspect histogram of gamma
-plt.figure(figsize=(5, 3.5))
+plt.figure(figsize=(4, 3))
 plt.hist(gamma_samples, bins=20, density=True)
 plt.axvline(x=gamma_W, color="black", linestyle="--")
 plt.tight_layout()
@@ -918,7 +918,7 @@ for i in range(num_burnin + num_mcmc):
         fhat_samples_non_robust[:, i - num_burnin] = yhat_forest
 
 # Plot RMSE samples side-by-side
-plt.figure(figsize=(6, 4))
+plt.figure(figsize=(4, 3))
 y_bounds = (
     np.min([rmse_samples, rmse_samples_non_robust]) * 0.8,
     np.max([rmse_samples, rmse_samples_non_robust]) * 1.25,
@@ -937,7 +937,7 @@ plt.tight_layout()
 plt.savefig("figures/Python/custom-interface-bart-robust-rmse-comparison.pdf", bbox_inches='tight')
 
 # Compute posterior mean of conditional expectations for the non-robust model
-plt.figure(figsize=(6, 4))
+plt.figure(figsize=(4, 3))
 m_x_hat_posterior_mean_non_robust = np.mean(fhat_samples_non_robust, axis=1)
 margin = 0.05 * (np.max(m_x) - np.min(m_x))
 y_bounds = (np.min(m_x) - margin, np.max(m_x) + margin)
@@ -1012,7 +1012,7 @@ bcf_model.sample(
 )
 
 # Inspect the resulting model
-print(bcf_model.summary())
+bcf_model.summary()
 
 # Compute outcome predictions
 y_hat = bcf_model.predict(
@@ -1033,7 +1033,7 @@ tau_hat_posterior = bcf_model.predict(
 )
 
 # Plot the true CATE against the CATE posterior mean
-plt.figure(figsize=(6, 4))
+plt.figure(figsize=(4, 3))
 plt.scatter(np.mean(tau_hat_posterior, axis = 1), tau_x)
 plt.axline((np.mean(tau_x), np.mean(tau_x)), slope = 1, color = "black", linestyle = (0, (3, 3)))
 plt.xlabel("Estimated CATE")
@@ -1042,7 +1042,7 @@ plt.tight_layout()
 plt.savefig("figures/Python/simulated-cate-true-fitted.pdf", bbox_inches='tight')
 
 # ATE histogram
-plt.figure(figsize=(5, 3.5))
+plt.figure(figsize=(4, 3))
 plt.hist(np.mean(tau_hat_posterior, axis = 0), bins = 30, density = True)
 plt.xlabel("ATE")
 plt.axvline(x = np.mean(tau_x), color = "black", linestyle = (0, (3, 3)))
@@ -1179,7 +1179,7 @@ rfx_intercept_group_means = np.array(
 )
 rfx_intercept_sort_inds = np.argsort(rfx_intercept_group_means).tolist()
 rfx_per_group_intercept = [rfx_betas[0, i, :] for i in rfx_intercept_sort_inds]
-plt.figure(figsize=(6, 3))
+plt.figure(figsize=(4, 3))
 plt.boxplot(rfx_per_group_intercept)
 plt.xticks([y + 1 for y in range(len(rfx_per_group_intercept)) if y % 5 == 0],
            labels=[rfx_intercept_sort_inds[y] for y in range(len(rfx_per_group_intercept)) if y % 5 == 0])
@@ -1191,7 +1191,7 @@ plt.savefig("figures/Python/acic-random-intercept-boxplot.pdf", bbox_inches='tig
 
 # ATE Histogram
 ate_posterior = np.mean(cate_posterior_rfx, axis=0)
-plt.figure(figsize=(5, 3.5))
+plt.figure(figsize=(4, 3))
 plt.hist(ate_posterior, bins = 30, density = True)
 plt.xlabel("ATE")
 plt.tight_layout()

@@ -19,7 +19,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install latest stochtree from PyPI
-RUN pip install --no-cache-dir stochtree==0.4.0
+RUN pip install --no-cache-dir git+https://github.com/StochasticTree/stochtree.git@python-0.4.1
 
 # Launch Python process
 CMD ["python"]
