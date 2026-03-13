@@ -191,10 +191,11 @@ y_hat_test <- predict(bart_model, X = X_test, terms = "y_hat", type = "mean")
 # Chart for paper
 pdf(
     "figures/R/friedman-bart-traceplot-warm-start.pdf",
-    width = 4,
-    height = 3,
+    width = 6,
+    height = 4,
     pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 sigma2_global_samples <- extractParameter(bart_model, "sigma2_global")
 plot(
     sigma2_global_samples,
@@ -207,11 +208,11 @@ dev.off()
 # Chart for paper
 pdf(
     "figures/R/friedman-bart-pred-actual-warm-start.pdf",
-    width = 4,
+    width = 6,
     height = 3,
     pointsize = 10
 )
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 2), mar = c(4, 4, 0.5, 0.5))
 plot(
     y_hat_test,
     y_test,
@@ -334,11 +335,11 @@ pred_interval_ub_het <- apply(
 # Side-by-side comparison of homoskedastic and heteroskedastic prediction intervals
 pdf(
     file = "figures/R/motorcycle-model-comparison.pdf",
-    width = 10,
-    height = 6,
-    pointsize = 22
+    width = 6,
+    height = 3,
+    pointsize = 10
 )
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 0.5))
 plot(
     mcycle$times,
     mcycle$accel,
@@ -346,7 +347,7 @@ plot(
     cex = 0.75,
     xlab = "x",
     ylab = "y",
-    main = "Homoskedastic\nBART",
+    main = "Homoskedastic BART",
     ylim = c(-170, 120)
 )
 lines(mcycle$times, y_hat_train_hom, col = 'red', lwd = 2)
@@ -359,7 +360,7 @@ plot(
     cex = 0.75,
     xlab = "x",
     ylab = "y",
-    main = "Heteroskedastic\nBART",
+    main = "Heteroskedastic BART",
     ylim = c(-170, 120)
 )
 lines(mcycle$times, y_hat_train_het, col = 'red', lwd = 2)
@@ -484,7 +485,8 @@ plot.cart <- function(rpart.obj) {
 }
 
 # Plot the surrogate regression tree
-pdf("figures/R/rdd-cate-tree.pdf", width = 3.5, height = 3, pointsize = 10)
+pdf("figures/R/rdd-cate-tree.pdf", width = 3.7, height = 3, pointsize = 10)
+par(mar = c(1, 1, 1, 1))
 rpart.plot(cate, main = "", box.col = plot.cart(cate))
 dev.off()
 
@@ -640,10 +642,11 @@ for (i in 1:(num_burnin + num_mcmc)) {
 # Look at traceplot of regression parameter samples
 pdf(
     "figures/R/custom-interface-bart-reg-gamma-histogram.pdf",
-    width = 4,
-    height = 3,
+    width = 5,
+    height = 3.5,
     pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 hist(
     gamma_samples,
     main = NULL,
@@ -903,10 +906,11 @@ for (i in 1:(num_burnin + num_mcmc)) {
 # Plot RMSE samples side-by-side
 pdf(
     "figures/R/custom-interface-bart-robust-rmse-comparison.pdf",
-    width = 4,
-    height = 3,
+    width = 6,
+    height = 4,
     pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 y_bounds <- range(c(rmse_samples, rmse_samples_non_robust))
 y_bounds[2] <- y_bounds[2] * 1.25
 plot(
@@ -932,10 +936,11 @@ m_x_hat_posterior_mean_non_robust <- rowMeans(fhat_samples_non_robust)
 # Plot predicted versus actual for both functions
 pdf(
     "figures/R/custom-interface-bart-robust-pred-actual-comparison.pdf",
-    width = 4,
-    height = 3,
+    width = 6,
+    height = 4,
     pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 y_bounds <- range(m_x)
 y_bounds[2] <- y_bounds[2] * 1.1
 plot(
@@ -1029,10 +1034,11 @@ ate_posterior <- colMeans(tau_hat_posterior)
 # Plot the true CATE against the CATE posterior mean
 pdf(
   "figures/R/simulated-cate-true-fitted.pdf",
-  width = 4,
-  height = 3,
-  pointsize = 8
+  width = 6,
+  height = 4,
+  pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 plot(
   rowMeans(tau_hat_posterior),
   tau_x,
@@ -1045,10 +1051,11 @@ dev.off()
 # ATE histogram
 pdf(
   "figures/R/simulated-ate-posterior.pdf",
-  width = 4,
-  height = 3,
-  pointsize = 8
+  width = 5,
+  height = 3.5,
+  pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 hist(
   ate_posterior,
   xlab = "ATE",
@@ -1084,10 +1091,11 @@ plot.cart <- function(rpart.obj) {
 # Plot the surrogate regression tree
 pdf(
   "figures/R/simulated-cate-tree.pdf",
-  width = 3.5,
+  width = 3.7,
   height = 3,
   pointsize = 10
 )
+par(mar = c(1, 1, 1, 1))
 rpart.plot(cate, main = "", box.col = plot.cart(cate))
 dev.off()
 
@@ -1260,14 +1268,14 @@ random_intercepts_long <- reshape(
     v.names = "V",
     direction = "long"
 )
-pdf("figures/R/acic-random-intercept-boxplot.pdf", width = 4, height = 3, pointsize = 8)
+pdf("figures/R/acic-random-intercept-boxplot.pdf", width = 6, height = 4, pointsize = 10)
+par(mar = c(4, 4, 0.5, 0.5))
 box_out <- boxplot(
     V ~ schoolid,
     data = random_intercepts_long,
     coef = 0,
     xlab = "School ID",
-    ylab = "Intercept",
-    main = "Random Intercept Posterior"
+    ylab = "Intercept"
 )
 abline(h = 0, lty = 2, lwd = 3, col = "blue")
 dev.off()
@@ -1276,10 +1284,11 @@ dev.off()
 ate_posterior_rfx <- colMeans(cate_posterior_rfx)
 pdf(
     "figures/R/acic-ate-posterior-rfx.pdf",
-    width = 4,
-    height = 3,
-    pointsize = 8
+    width = 5,
+    height = 3.5,
+    pointsize = 10
 )
+par(mar = c(4, 4, 0.5, 0.5))
 hist(
     ate_posterior_rfx,
     xlab = "ATE",
@@ -1310,11 +1319,11 @@ ate_posterior_rfx_school_j <- as.numeric(school_ate_rfx_posterior[
 ])
 pdf(
     "figures/R/acic-bcf-rfx-comparison.pdf",
-    width = 4,
+    width = 6,
     height = 3,
-    pointsize = 8
+    pointsize = 10
 )
-par(mfrow = (c(1, 2)))
+par(mfrow = c(1, 2), mar = c(4, 4, 0.5, 0.5))
 x_range <- range(c(ate_posterior_school_i, ate_posterior_rfx_school_i))
 y_range <- range(c(ate_posterior_school_j, ate_posterior_rfx_school_j))
 plot(

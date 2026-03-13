@@ -3,6 +3,7 @@
 ##################################################################
 
 # Import packages
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -28,6 +29,9 @@ from stochtree import (
     ForestModelConfig,
     GlobalModelConfig,
 )
+
+# Consistent font size across all figures
+mpl.rcParams['font.size'] = 10
 
 # Set seed for reproducibility
 random_seed = 4321
@@ -253,7 +257,7 @@ print(bart_model)
 y_hat_test = bart_model.predict(X=X_test, terms="y_hat", type="mean")
 
 # Plot predicted vs true outcomes
-fig, axes = plt.subplots(1, 2, figsize=(8, 6), dpi=100)
+fig, axes = plt.subplots(1, 2, figsize=(6, 3))
 axes[0].scatter(y_hat_test, y_test)
 y_bar = np.mean(y_test)
 axes[0].axline(
@@ -268,13 +272,15 @@ axes[1].axline(
 )
 axes[1].set_xlabel("Predicted Conditional Mean")
 axes[1].set_ylabel("Actual Conditional Mean")
-plt.savefig("figures/Python/friedman-bart-pred-actual-warm-start.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/friedman-bart-pred-actual-warm-start.pdf", bbox_inches='tight')
 
 # Inspect the traceplot of sigma^2
-plt.clf()
+plt.figure(figsize=(6, 4))
 sigma2_global_samples = bart_model.extract_parameter("sigma2_global")
 plt.plot(sigma2_global_samples, linestyle="-")
-plt.savefig("figures/Python/friedman-bart-traceplot-warm-start.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/friedman-bart-traceplot-warm-start.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 2: Heteroskedasticity Demo
@@ -352,9 +358,7 @@ pred_interval_lb_het = np.quantile(y_posterior_predictive_het, axis=(1, 2), q=0.
 pred_interval_ub_het = np.quantile(y_posterior_predictive_het, axis=(1, 2), q=0.975)
 
 # Side-by-side comparison of homoskedastic and heteroskedastic prediction intervals
-plt.clf()
-fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=100)
-plt.ylim(-170, 120)
+fig, axes = plt.subplots(1, 2, figsize=(6, 3))
 axes[0].scatter(mcycle[:, 0], mcycle[:, 1])
 axes[0].plot(mcycle[:, 0], y_hat_train_hom, color="red", linewidth=2)
 axes[0].plot(
@@ -373,7 +377,7 @@ axes[0].plot(
 )
 axes[0].set_xlabel("x")
 axes[0].set_ylabel("y")
-axes[0].set_title("Homoskedastic\nBART")
+axes[0].set_title("Homoskedastic BART")
 axes[1].scatter(mcycle[:, 0], mcycle[:, 1])
 axes[1].plot(mcycle[:, 0], y_hat_train_het, color="red", linewidth=2)
 axes[1].plot(
@@ -392,8 +396,9 @@ axes[1].plot(
 )
 axes[1].set_xlabel("x")
 axes[1].set_ylabel("y")
-axes[1].set_title("Heteroskedastic\nBART")
-plt.savefig("figures/Python/motorcycle-model-comparison.pdf")
+axes[1].set_title("Heteroskedastic BART")
+plt.tight_layout()
+plt.savefig("figures/Python/motorcycle-model-comparison.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 3: Regression Discontinuity Design BART Demo
@@ -502,7 +507,7 @@ surrogate_tree = DecisionTreeRegressor(random_state=random_seed, max_depth=2)
 surrogate_tree.fit(w.iloc[test, :], tau_hat_bar)
 
 # Plot regression tree
-plt.clf()
+plt.figure(figsize=(6, 4))
 plot_tree(
     surrogate_tree,
     feature_names=[
@@ -520,7 +525,8 @@ plot_tree(
     impurity=False,
     fontsize=8,
 )
-plt.savefig("figures/Python/rdd-cate-tree.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/rdd-cate-tree.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 4: Custom Interface Additive Linear Model Demo
@@ -664,10 +670,11 @@ for i in range(num_burnin + num_mcmc):
 
 
 # Inspect histogram of gamma
-plt.clf()
+plt.figure(figsize=(5, 3.5))
 plt.hist(gamma_samples, bins=20, density=True)
 plt.axvline(x=gamma_W, color="black", linestyle="--")
-plt.savefig("figures/Python/custom-interface-bart-reg-gamma-histogram.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/custom-interface-bart-reg-gamma-histogram.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 5: Custom Interface Robust Error Demo
@@ -911,7 +918,7 @@ for i in range(num_burnin + num_mcmc):
         fhat_samples_non_robust[:, i - num_burnin] = yhat_forest
 
 # Plot RMSE samples side-by-side
-plt.clf()
+plt.figure(figsize=(6, 4))
 y_bounds = (
     np.min([rmse_samples, rmse_samples_non_robust]) * 0.8,
     np.max([rmse_samples, rmse_samples_non_robust]) * 1.25,
@@ -926,12 +933,14 @@ plt.plot(
 plt.ylabel("In-Sample RMSE")
 plt.xlabel("Iteration")
 plt.legend(loc="upper left")
-plt.savefig("figures/Python/custom-interface-bart-robust-rmse-comparison.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/custom-interface-bart-robust-rmse-comparison.pdf", bbox_inches='tight')
 
 # Compute posterior mean of conditional expectations for the non-robust model
-plt.clf()
+plt.figure(figsize=(6, 4))
 m_x_hat_posterior_mean_non_robust = np.mean(fhat_samples_non_robust, axis=1)
-y_bounds = (np.min(m_x) * 0.9, np.max(m_x) * 1.1)
+margin = 0.05 * (np.max(m_x) - np.min(m_x))
+y_bounds = (np.min(m_x) - margin, np.max(m_x) + margin)
 plt.ylim(y_bounds)
 plt.scatter(
     m_x_hat_posterior_mean_non_robust, m_x, label="Gaussian Errors", color="lightgray"
@@ -941,7 +950,8 @@ plt.axline((np.mean(m_x), np.mean(m_x)), slope=1, color="black", linestyle=(0, (
 plt.ylabel("True f(x)")
 plt.xlabel("Predicted f(x)")
 plt.legend(loc="upper left")
-plt.savefig("figures/Python/custom-interface-bart-robust-pred-actual-comparison.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/custom-interface-bart-robust-pred-actual-comparison.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 6: Simulated Causal Inference Demo
@@ -1023,19 +1033,21 @@ tau_hat_posterior = bcf_model.predict(
 )
 
 # Plot the true CATE against the CATE posterior mean
-plt.clf()
+plt.figure(figsize=(6, 4))
 plt.scatter(np.mean(tau_hat_posterior, axis = 1), tau_x)
 plt.axline((np.mean(tau_x), np.mean(tau_x)), slope = 1, color = "black", linestyle = (0, (3, 3)))
 plt.xlabel("Estimated CATE")
 plt.ylabel("True CATE")
-plt.savefig("figures/Python/simulated-cate-true-fitted.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/simulated-cate-true-fitted.pdf", bbox_inches='tight')
 
 # ATE histogram
-plt.clf()
+plt.figure(figsize=(5, 3.5))
 plt.hist(np.mean(tau_hat_posterior, axis = 0), bins = 30, density = True)
 plt.xlabel("ATE")
 plt.axvline(x = np.mean(tau_x), color = "black", linestyle = (0, (3, 3)))
-plt.savefig("figures/Python/simulated-ate-posterior.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/simulated-ate-posterior.pdf", bbox_inches='tight')
 
 # Fit a surrogate regression tree to the posterior mean of the CATE samples
 tau_hat_bar = np.mean(tau_hat_posterior, axis=1)
@@ -1043,7 +1055,7 @@ surrogate_tree = DecisionTreeRegressor(random_state=random_seed, max_depth=2)
 surrogate_tree.fit(X, tau_hat_bar)
 
 # Plot the surrogate regression tree
-plt.clf()
+plt.figure(figsize=(6, 4))
 plot_tree(
     surrogate_tree,
     feature_names=[f"X{i+1}" for i in range(p)],
@@ -1052,7 +1064,8 @@ plot_tree(
     impurity=False,
     fontsize=8,
 )
-plt.savefig("figures/Python/simulated-cate-tree.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/simulated-cate-tree.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 7: ACIC Data Causal Inference Demo
@@ -1166,20 +1179,23 @@ rfx_intercept_group_means = np.array(
 )
 rfx_intercept_sort_inds = np.argsort(rfx_intercept_group_means).tolist()
 rfx_per_group_intercept = [rfx_betas[0, i, :] for i in rfx_intercept_sort_inds]
-plt.clf()
+plt.figure(figsize=(6, 3))
 plt.boxplot(rfx_per_group_intercept)
 plt.xticks([y + 1 for y in range(len(rfx_per_group_intercept)) if y % 5 == 0],
            labels=[rfx_intercept_sort_inds[y] for y in range(len(rfx_per_group_intercept)) if y % 5 == 0])
 plt.xlabel('Group ID')
 plt.ylabel('Random Intercept Posterior')
 plt.axhline(y=0.0, color='black', linestyle='--')
-plt.savefig("figures/Python/acic-random-intercept-boxplot.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/acic-random-intercept-boxplot.pdf", bbox_inches='tight')
 
 # ATE Histogram
 ate_posterior = np.mean(cate_posterior_rfx, axis=0)
-plt.clf()
+plt.figure(figsize=(5, 3.5))
 plt.hist(ate_posterior, bins = 30, density = True)
-plt.savefig("figures/Python/acic-ate-posterior-rfx.pdf")
+plt.xlabel("ATE")
+plt.tight_layout()
+plt.savefig("figures/Python/acic-ate-posterior-rfx.pdf", bbox_inches='tight')
 
 # Compare posterior of school-level ATEs for pairs of schools
 # Choose the same two schools that we investigated in the R analysis
@@ -1200,8 +1216,7 @@ y_range = (np.min(np.c_[ate_posterior_school_j, ate_posterior_rfx_school_j]),
 adj = 0.05
 x_range = (x_range[0] - adj, x_range[1] + adj)
 y_range = (y_range[0] - adj, y_range[1] + adj)
-plt.clf()
-fig, axes = plt.subplots(1, 2, figsize=(10, 6), dpi=100)
+fig, axes = plt.subplots(1, 2, figsize=(6, 3))
 axes[0].scatter(ate_posterior_school_i, ate_posterior_school_j)
 axes[0].set_xlim(x_range)
 axes[0].set_ylim(y_range)
@@ -1216,7 +1231,8 @@ axes[1].scatter(np.mean(ate_posterior_rfx_school_i), np.mean(ate_posterior_rfx_s
 axes[1].axline((np.mean(ate_posterior_rfx_school_j), np.mean(ate_posterior_rfx_school_j)), slope=1, color="black", linestyle=(0, (3, 3)))
 axes[1].set_xlabel(f"School {i + 1} ATE (with RFX)")
 axes[1].set_ylabel(f"School {j + 1} ATE (with RFX)")
-plt.savefig("figures/Python/acic-bcf-rfx-comparison.pdf")
+plt.tight_layout()
+plt.savefig("figures/Python/acic-bcf-rfx-comparison.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 8: Sklearn API Demo
