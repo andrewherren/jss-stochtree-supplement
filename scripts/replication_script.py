@@ -236,7 +236,7 @@ xbart_model.sample(
     general_params={"random_seed": random_seed, "num_threads": 1},
 )
 xbart_json = xbart_model.to_json()
-mean_forest_params = {"alpha": 0.25, "beta": 2, "min_samples_leaf": 10, "max_depth": 8}
+mean_forest_params = {"alpha": 0.25}
 bart_model = BARTModel()
 bart_model.sample(
     X_train=X_train,
@@ -281,6 +281,31 @@ fig, ax = plt.subplots(figsize=(4, 3))
 plot_parameter_trace(bart_model, term="sigma2_global", ax=ax)
 plt.tight_layout()
 plt.savefig("figures/Python/friedman-bart-traceplot-warm-start.pdf", bbox_inches='tight')
+
+# Posterior inclusion probability
+forests = bart_model.forest_container_mean
+S = forests.num_samples()
+split_counts = np.array(
+    [forests.get_forest_split_counts(s, p) for s in range(S)]
+)
+pip = np.mean(split_counts > 0, axis=0)
+fig, ax = plt.subplots(figsize=(4, 3))
+ax.scatter(np.arange(1, p + 1), pip)
+ax.set_xlabel("Variable Index")
+ax.set_ylabel("Posterior Inclusion Probability")
+plt.tight_layout()
+plt.savefig("figures/Python/friedman-bart-pip-warm-start.pdf", bbox_inches='tight')
+
+# Average variable usage frequency
+row_tot = split_counts.sum(axis=1)
+props = split_counts / np.where(row_tot == 0, 1, row_tot)[:, None]
+usage_freq = props.mean(axis=0)
+fig, ax = plt.subplots(figsize=(4, 3))
+ax.scatter(np.arange(1, p + 1), usage_freq)
+ax.set_xlabel("Variable Index")
+ax.set_ylabel("Variable Usage Frequency")
+plt.tight_layout()
+plt.savefig("figures/Python/friedman-bart-usage-freq-warm-start.pdf", bbox_inches='tight')
 
 ##################################################################
 ### Section 2: Heteroskedasticity Demo
@@ -375,8 +400,8 @@ axes[0].plot(
     linewidth=2,
     linestyle="dashed",
 )
-axes[0].set_xlabel("x")
-axes[0].set_ylabel("y")
+axes[0].set_xlabel("Time After Impact (ms)")
+axes[0].set_ylabel("Head Acceleration (g)")
 axes[0].set_title("Homoskedastic BART")
 axes[1].scatter(mcycle[:, 0], mcycle[:, 1])
 axes[1].plot(mcycle[:, 0], y_hat_train_het, color="red", linewidth=2)
@@ -394,8 +419,8 @@ axes[1].plot(
     linewidth=2,
     linestyle="dashed",
 )
-axes[1].set_xlabel("x")
-axes[1].set_ylabel("y")
+axes[1].set_xlabel("Time After Impact (ms)")
+axes[1].set_ylabel("Head Acceleration (g)")
 axes[1].set_title("Heteroskedastic BART")
 plt.tight_layout()
 plt.savefig("figures/Python/motorcycle-model-comparison.pdf", bbox_inches='tight')
@@ -1181,9 +1206,8 @@ rfx_intercept_sort_inds = np.argsort(rfx_intercept_group_means).tolist()
 rfx_per_group_intercept = [rfx_betas[0, i, :] for i in rfx_intercept_sort_inds]
 plt.figure(figsize=(4, 3))
 plt.boxplot(rfx_per_group_intercept)
-plt.xticks([y + 1 for y in range(len(rfx_per_group_intercept)) if y % 5 == 0],
-           labels=[rfx_intercept_sort_inds[y] for y in range(len(rfx_per_group_intercept)) if y % 5 == 0])
-plt.xlabel('Group ID')
+plt.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
+plt.xlabel('School (Sorted by Posterior Median Intercept)')
 plt.ylabel('Random Intercept Posterior')
 plt.axhline(y=0.0, color='black', linestyle='--')
 plt.tight_layout()
@@ -1200,15 +1224,11 @@ plt.savefig("figures/Python/acic-ate-posterior-rfx.pdf", bbox_inches='tight')
 # Compare posterior of school-level ATEs for pairs of schools
 # Choose the same two schools that we investigated in the R analysis
 i = 48
-j = 26
-i_pos_rfx = school_ate_rfx_posterior.loc[school_ate_rfx_posterior.loc[:,'schoolid'] == i, 'schoolid'].iloc[0]
-j_pos_rfx = school_ate_rfx_posterior.loc[school_ate_rfx_posterior.loc[:,'schoolid'] == j, 'schoolid'].iloc[0]
-i_pos = school_ate_posterior.loc[school_ate_posterior.loc[:,'schoolid'] == i, 'schoolid'].iloc[0]
-j_pos = school_ate_posterior.loc[school_ate_posterior.loc[:,'schoolid'] == j, 'schoolid'].iloc[0]
-ate_posterior_school_i = school_ate_posterior.iloc[i_pos, 1:].to_numpy()
-ate_posterior_rfx_school_i = school_ate_rfx_posterior.iloc[i_pos_rfx, 1:].to_numpy()
-ate_posterior_school_j = school_ate_posterior.iloc[j_pos, 1:].to_numpy()
-ate_posterior_rfx_school_j = school_ate_rfx_posterior.iloc[j_pos_rfx, 1:].to_numpy()
+j = 43
+ate_posterior_school_i = school_ate_posterior.loc[school_ate_posterior["schoolid"] == i].iloc[0].drop("schoolid").to_numpy()
+ate_posterior_rfx_school_i = school_ate_rfx_posterior.loc[school_ate_rfx_posterior["schoolid"] == i].iloc[0].drop("schoolid").to_numpy()
+ate_posterior_school_j = school_ate_posterior.loc[school_ate_posterior["schoolid"] == j].iloc[0].drop("schoolid").to_numpy()
+ate_posterior_rfx_school_j = school_ate_rfx_posterior.loc[school_ate_rfx_posterior["schoolid"] == j].iloc[0].drop("schoolid").to_numpy()
 x_range = (np.min(np.c_[ate_posterior_school_i, ate_posterior_rfx_school_i]), 
            np.max(np.c_[ate_posterior_school_i, ate_posterior_rfx_school_i]))
 y_range = (np.min(np.c_[ate_posterior_school_j, ate_posterior_rfx_school_j]), 
