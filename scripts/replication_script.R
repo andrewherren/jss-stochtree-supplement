@@ -1336,10 +1336,30 @@ hist(
 )
 dev.off()
 
-# Compare posterior of school-level ATEs for pairs of schools
-ind <- 1
-i <- school_ate_posterior$schoolid[ind]
-j <- school_ate_posterior$schoolid[ind + 1]
+# Select two schools to compare based on the similarity of X1 and X2
+tau_split_cols <- c("X1", "X2")
+school_covariates <- aggregate(
+  df[, tau_split_cols],
+  by = list(schoolid = df$schoolid),
+  FUN = function(x) x[1]
+)
+school_ids <- school_covariates$schoolid
+school_cont <- scale(as.matrix(school_covariates[, tau_split_cols]))
+best_dist <- Inf
+i <- NA
+j <- NA
+for (a in 1:(length(school_ids) - 1)) {
+  for (b in (a + 1):length(school_ids)) {
+    d <- sqrt(sum((school_cont[a, ] - school_cont[b, ])^2))
+    if (d < best_dist) {
+      best_dist <- d
+      i <- school_ids[a]
+      j <- school_ids[b]
+    }
+  }
+}
+
+# Compare posterior of school-level ATEs for the selected pair of schools
 ate_posterior_school_i <- as.numeric(school_ate_posterior[
   school_ate_posterior$schoolid == i,
   2:(num_samples + 1)

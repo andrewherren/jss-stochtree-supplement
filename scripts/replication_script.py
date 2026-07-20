@@ -1221,10 +1221,29 @@ plt.xlabel("ATE")
 plt.tight_layout()
 plt.savefig("figures/Python/acic-ate-posterior-rfx.pdf", bbox_inches='tight')
 
-# Compare posterior of school-level ATEs for pairs of schools
-# Choose the same two schools that we investigated in the R analysis
-i = 48
-j = 43
+# Select two schools to compare based on the similarity of X1 and X2
+tau_split_cols = ["X1", "X2"]
+school_covariates = df.groupby("schoolid")[tau_split_cols].first()
+school_ids = school_covariates.index.to_numpy()
+school_cont = school_covariates[tau_split_cols].to_numpy()
+school_cont = (school_cont - school_cont.mean(axis=0)) / school_cont.std(
+    axis=0, ddof=1
+)
+best_dist = np.inf
+i_raw = None
+j_raw = None
+for a in range(len(school_ids)):
+    for b in range(a + 1, len(school_ids)):
+        d = np.sqrt(np.sum((school_cont[a] - school_cont[b]) ** 2))
+        if d < best_dist:
+            best_dist = d
+            i_raw = school_ids[a]
+            j_raw = school_ids[b]
+# schoolid is stored 0-indexed (raw schoolid - 1) elsewhere in this script
+i = int(i_raw) - 1
+j = int(j_raw) - 1
+
+# Compare posterior of school-level ATEs for the selected pair of schools
 ate_posterior_school_i = school_ate_posterior.loc[school_ate_posterior["schoolid"] == i].iloc[0].drop("schoolid").to_numpy()
 ate_posterior_rfx_school_i = school_ate_rfx_posterior.loc[school_ate_rfx_posterior["schoolid"] == i].iloc[0].drop("schoolid").to_numpy()
 ate_posterior_school_j = school_ate_posterior.loc[school_ate_posterior["schoolid"] == j].iloc[0].drop("schoolid").to_numpy()
